@@ -10,8 +10,8 @@ while True:
     if queue_data.empty():
         continue
     image_data = queue_data.get()
-    size = int(queue_data.qsize()/3)
-    if queue_data.qsize() < 20:
+    size = int(queue_data.qsize()/2)
+    if queue_data.qsize() < 19:
         size = 50
     
     time.sleep(random.randint(1,size)/10)

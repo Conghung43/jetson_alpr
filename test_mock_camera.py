@@ -2,11 +2,12 @@ import cv2
 import time
 import queue
 import os
+import glob
 
 image = cv2.imread('image.jpg')
-
+image_temp_path = 'image_temp'
 def put_queue_save_image(images_saved_path_queue, current_time, image):
-    image_name_time_gps = f'image_temp/{current_time}_22.625876_120.311123.jpg'
+    image_name_time_gps = f'{image_temp_path}/{current_time}_22.625876_120.311123.jpg'
     images_saved_path_queue.put(image_name_time_gps)
     #Save image
     cv2.imwrite(image_name_time_gps, image)
@@ -14,6 +15,10 @@ def put_queue_save_image(images_saved_path_queue, current_time, image):
 def read_camera_mock( queue_data):
     current_second = time.localtime(time.time()).tm_sec
     images_saved_path_queue = queue.Queue()
+    # put unhandle image from drive to queue
+    for image_path in glob.glob(f'{image_temp_path}/*.jpg'):
+        images_saved_path_queue.put(image_path)
+
     while True:
         if time.localtime(time.time()).tm_sec != current_second:
             current_time = time.time()
