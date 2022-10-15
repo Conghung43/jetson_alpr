@@ -2,6 +2,9 @@ import sqlite3
 import random
 import string
 import time
+import os.path
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def insert_plate(db, cursor, plate_number):
     cursor.execute(
@@ -21,9 +24,12 @@ def generate_plate_information():
     latitude = random.uniform(120,121)
     return [plate_number, recorded_time, longtitude, latitude]
 def main():
-    db = sqlite3.connect("alpr_jetson.db")
+    db_path = os.path.join(BASE_DIR, "alpr_jetson.db")
+    # with sqlite3.connect(db_path) as db:
+    db = sqlite3.connect("main.db")
     cursor = db.cursor()
     plate_information = generate_plate_information()
+    # cursor.execute("CREATE TABLE PLATE (ID INTEGER PRIMARY KEY AUTOINCREMENT,  PLATE_NO VARCHAR(10))")
     cursor.execute("SELECT * FROM PLATE")
     user_all = cursor.fetchall()
     print('')
