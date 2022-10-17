@@ -5,7 +5,7 @@ import time
 import random
 queue_data = queue.Queue()
 
-threading.Thread(target=test_mock_camera.read_camera_mock, args=(queue_data,)).start()
+threading.Thread(target=test_mock_camera.read_camera, args=(queue_data,)).start()
 while True:
     if queue_data.empty():
         continue

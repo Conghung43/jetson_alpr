@@ -11,15 +11,23 @@ There are 5 parts:
 
 3. ZED camera. 
 -Directly use ZED because it available now (no need to buy==> Decrease R&D cost). Potential camera will be listed bellow
-
 -Tested with JETSON NANO and it consume less resoure with depth mode = NONE
 
 
 4. Program optimize.
 -Thread vs Queue tested (save temp image in memory, drive)
 
+5. SQL
+-read write to sqlite3
+
+6. File management.
+-Ken design
 
 
 
 
-Next step: setup ARDUINO and communicate with python program via USB
+
+
+Next step:
+Current: 20 FPS after training 
+setup ARDUINO and communicate with python program via USB: GPS device not work
