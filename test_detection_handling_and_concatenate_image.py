@@ -63,7 +63,7 @@ def check_image_close_border(image_height, image_width, xmin, xmax, ymin, ymax):
     return xmin, xmax, ymin, ymax
 
 def image_crop_base_ratio(raw_image, plate_detection_data, ratio):
-    zoom_ratio_jump = ((ratio/2)-max_ratio_zoom)/4
+    zoom_ratio_jump = ((ratio/2)-max_ratio_zoom)/16
     x,y,_, _ = plate_detection_data[2]
     image_height, image_width = raw_image.shape[:2]
     images = []
