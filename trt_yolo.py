@@ -82,13 +82,10 @@ def loop_and_detect(cam, trt_yolo, conf_th, vis):
             # detections = detection_handling.resize_detections(img, detections)#???
             detections = detection_handling.dupplicate_handling(detections)
             _, detections_masks = detection_handling.clasify_plate_data(detections)
-            print([get_plate_character(plate) for plate in detections_masks])
-
-            # test_sqlite.insert_sql(db, cursor, plate_number, recorded_time, longtitude, latitude)
-
-
+            for plate in detections_masks:
+                plate = get_plate_character(plate) 
+                test_sqlite.insert_sql(db, cursor, plate, current_time, longitude, latitude)
         #[plate_number, recorded_time, longtitude, latitude]
-
 
 def main():
     args = parse_args()
