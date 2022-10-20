@@ -76,19 +76,27 @@ def image_crop_base_ratio(raw_image, plate_detection_data, ratio):
         image_crop = raw_image[ymin:ymax,xmin:xmax]
         image_crop = cv2.resize(image_crop, 
                             (int(image_width/2), int(image_height/2)), 
-                            interpolation = cv2.INTER_AREA)
+                            interpolation = cv2.INTER_NEAREST)
         images.append(image_crop)
     return images
 image_size_temp = 416
 def image_concatenate(images):
     concatenate_images = []
+    # for index in range(0, len(images), images_per_page):
+    #     numpy_horizontal_12 = np.hstack(images[index:int(index+images_per_page/2)])
+    #     numpy_horizontal_34 = np.hstack(images[int(index+images_per_page/2):index+images_per_page])
+    #     numpy_vertical = np.vstack((numpy_horizontal_12, numpy_horizontal_34))
+    #     concatenate_images.append(numpy_vertical)
+    #     # numpy_vertical = cv2.cvtColor(numpy_vertical, cv2.COLOR_BGR2RGB)
+    #     cv2.imwrite(f'image_log/{time.time()}.jpg', numpy_vertical)
     for index in range(0, len(images), images_per_page):
-        numpy_horizontal_12 = np.hstack(images[index:int(index+images_per_page/2)])
-        numpy_horizontal_34 = np.hstack(images[int(index+images_per_page/2):index+images_per_page])
-        numpy_vertical = np.vstack((numpy_horizontal_12, numpy_horizontal_34))
+        h,w,c = images[index].shape
+        numpy_vertical = np.zeros((h*2, w*2, c),dtype=np.uint8)
+        numpy_vertical[0:h,0:w] = images[index]
+        numpy_vertical[0:h,w:2*w] = images[index+1]
+        numpy_vertical[h:h*2,0:w] = images[index+2]
+        numpy_vertical[h:h*2,w:w*2] = images[index+3]
         concatenate_images.append(numpy_vertical)
-        # numpy_vertical = cv2.cvtColor(numpy_vertical, cv2.COLOR_BGR2RGB)
-        cv2.imwrite(f'image_log/{time.time()}.jpg', numpy_vertical)
     return concatenate_images
 
 def add_white_image_four_even(images):
