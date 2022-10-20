@@ -1,6 +1,6 @@
 # import numpy as np
 # import time
-import config
+from jetson_alpr import config
 from datetime import datetime
 import os
 from PIL import Image
