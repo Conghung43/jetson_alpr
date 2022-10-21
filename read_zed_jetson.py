@@ -4,7 +4,7 @@ import numpy as np
 import pyzed.sl as sl
 import time
 init = sl.InitParameters()
-init.camera_resolution = sl.RESOLUTION.HD2K
+init.camera_resolution = sl.RESOLUTION.HD1080
 init.depth_mode = sl.DEPTH_MODE.NONE
 cam = sl.Camera()
 if not cam.is_opened():

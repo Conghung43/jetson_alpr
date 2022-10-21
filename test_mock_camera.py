@@ -6,7 +6,7 @@ import glob
 import pyzed.sl as sl
 from jetson_alpr.file_management import image_log_management
 
-image_mock = cv2.imread('/home/nano/project/tensorrt_demos/jetson_alpr/image_test/12)AJX3380.jpg')
+image_mock = cv2.imread('/home/nano/project/tensorrt_demos/jetson_alpr/image_test/5)7822GH.jpg')
 image_temp_path = 'image_temp'
 def put_queue_save_image(images_saved_path_queue, current_time, image):
     image_name_time_gps = f'{image_temp_path}/{current_time}_22.625876_120.311123.jpg'
@@ -17,7 +17,7 @@ def put_queue_save_image(images_saved_path_queue, current_time, image):
 def read_camera( queue_data):
     #Read zed canera
     init = sl.InitParameters()
-    init.camera_resolution = sl.RESOLUTION.HD2K
+    init.camera_resolution = sl.RESOLUTION.HD1080
     init.depth_mode = sl.DEPTH_MODE.NONE
     cam = sl.Camera()
     if not cam.is_opened():
