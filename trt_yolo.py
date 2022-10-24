@@ -1,14 +1,6 @@
-"""trt_yolo.py
-
-This script demonstrates how to do real-time object detection with
-TensorRT optimized YOLO engine.
-"""
-
-
 import os
 import time
 import argparse
-
 import cv2
 import pycuda.autoinit  # This is needed for initializing CUDA driver
 
@@ -18,9 +10,18 @@ from utils.display import open_window, set_display, show_fps
 from utils.visualization import BBoxVisualization
 from utils.yolo_with_plugins import TrtYOLO
 
+import queue
+import test_mock_camera
+import threading
+import time
+import random
+import test_sqlite
+import test_detection_handling_and_concatenate_image as detection_handling
+import sqlite3
+import collections
+queue_data = queue.Queue()
 
-WINDOW_NAME = 'TrtYOLODemo'
-
+threading.Thread(target=test_mock_camera.read_camera, args=(queue_data,)).start()
 
 def parse_args():
     """Parse input arguments."""
@@ -47,36 +48,46 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+def get_plate_character(char_dict):
+  plate_character = ''
+  char_dict = collections.OrderedDict(sorted(char_dict.items()))
+  for k, v in char_dict.items():
+    plate_character = plate_character + v
+  return plate_character
 
 def loop_and_detect(cam, trt_yolo, conf_th, vis):
-    """Continuously capture images from camera and do object detection.
-
-    # Arguments
-      cam: the camera instance (video source).
-      trt_yolo: the TRT YOLO object detector instance.
-      conf_th: confidence/score threshold for object detection.
-      vis: for visualization.
-    """
-    full_scrn = False
-    fps = 0.0
-    tic = time.time()
+    db = sqlite3.connect("main.db")
+    cursor = db.cursor()
     while True:
-        if cv2.getWindowProperty(WINDOW_NAME, 0) < 0:
-            break
-        img = cam.read()
-        if img is None:
-            break
-        boxes, confs, clss = trt_yolo.detect(img, conf_th)
-        #img = vis.draw_bboxes(img, boxes, confs, clss)
-        img = show_fps(img, fps)
-        cv2.imshow(WINDOW_NAME, img)
-        toc = time.time()
-        curr_fps = 1.0 / (toc - tic)
-        # calculate an exponentially decaying average of fps number
-        fps = curr_fps if fps == 0.0 else (fps*0.95 + curr_fps*0.05)
-        tic = toc
-        key = cv2.waitKey(1)
-        #print(os.popen("cat /sys/devices/virtual/thermal/thermal_zone0/temp").read())#Check temperature
+        if queue_data.empty():
+            continue
+        image_data = queue_data.get()
+        current_time,latitude, longitude, img = image_data
+        boxes, confs, clss = trt_yolo.detect(img.copy(), conf_th)
+        detections = zip(boxes, confs, clss)
+        # detections = detection_handling.resize_detections(img, detections)#???
+        detections = detection_handling.dupplicate_handling(detections)
+        detections_plate, _ = detection_handling.clasify_plate_data(detections)
+
+        # Handle zoom:
+        images = []  
+        for detection_plate in detections_plate:
+            images += detection_handling.plate_zoom_concatenate(raw_image, detection_plate)
+        detection_handling.add_white_image_four_even(images)
+        concatenated_images = detection_handling.image_concatenate(images)
+
+        for concatenated_image in concatenated_images:
+            boxes, confs, clss = trt_yolo.detect(concatenated_image.copy(), conf_th)
+            detections = zip(boxes, confs, clss)
+            # detections = detection_handling.resize_detections(img, detections)#???
+            detections = detection_handling.dupplicate_handling(detections)
+            _, detections_masks = detection_handling.clasify_plate_data(detections)
+            print([get_plate_character(plate) for plate in detections_masks])
+
+            # test_sqlite.insert_sql(db, cursor, plate_number, recorded_time, longtitude, latitude)
+
+
+        #[plate_number, recorded_time, longtitude, latitude]
 
 
 def main():
@@ -89,14 +100,9 @@ def main():
     cam = Camera(args)
     if not cam.isOpened():
         raise SystemExit('ERROR: failed to open camera!')
-
     cls_dict = get_cls_dict(args.category_num)
     vis = BBoxVisualization(cls_dict)
     trt_yolo = TrtYOLO(args.model, args.category_num, args.letter_box)
-
-    open_window(
-        WINDOW_NAME, 'Camera TensorRT YOLO Demo',
-        cam.img_width, cam.img_height)
     loop_and_detect(cam, trt_yolo, args.conf_thresh, vis=vis)
 
     cam.release()

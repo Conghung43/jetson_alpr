@@ -4,6 +4,7 @@ import queue
 import os
 import glob
 import pyzed.sl as sl
+from file_management import image_log_management
 
 # image = cv2.imread('image.jpg')
 image_temp_path = 'image_temp'
@@ -43,6 +44,7 @@ def read_camera( queue_data):
                 # print(queue_data.qsize(), images_saved_path_queue.qsize())
                 image = mat.get_data()
                 image = cv2.cvtColor(image, cv2.COLOR_RGBA2RGB)
+                image_log_management.save_image(image, current_time, [latitude, longitude])
                 if queue_data.qsize() > 20:
                     put_queue_save_image(images_saved_path_queue, current_time, image)
                 else:

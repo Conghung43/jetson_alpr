@@ -180,7 +180,7 @@ detections1 = [('3', '41.7', (492.1046447753906, 456.39300537109375, 49.10152435
  ('plate', '99.98', (173.87850952148438, 456.22930908203125, 57.06219482421875, 39.585357666015625)), 
  ('plate', '99.99', (153.40406799316406, 152.752197265625, 73.89910888671875, 47.74468231201172))]      
 
-raw_image = cv2.imread('12)AJX3380.jpg')
+raw_image = cv2.imread(r'image_test\12)AJX3380.jpg')
 
 # raw_image = cv2.resize(raw_image, (608,608), interpolation = cv2.INTER_AREA)
 detections = resize_detections(raw_image, detections)
