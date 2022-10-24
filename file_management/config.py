@@ -11,10 +11,10 @@ quality = 100
 pillow = not True
 
 ##-----[Folder expired time] unit: days Default : 3days
-expired_time = 2
+expired_day = 2
 
 ##-----[Time interval for saving image] unit: seconds Default: 60 seconds
-time_diff = 60
+time_diff = 3
 
 ##------[Image Format] JPG or PNG,   Default : JPG
 image_format = 'jpg'
