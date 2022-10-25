@@ -72,7 +72,7 @@ def loop_and_detect(cam, trt_yolo, conf_th, vis):
         # Handle zoom:
         images = []  
         for detection_plate in detections_plate:
-            images += detection_handling.plate_zoom_concatenate(raw_image, detection_plate)
+            images += detection_handling.plate_zoom_concatenate(img, detection_plate)
         detection_handling.add_white_image_four_even(images)
         concatenated_images = detection_handling.image_concatenate(images)
 
@@ -104,10 +104,6 @@ def main():
     vis = BBoxVisualization(cls_dict)
     trt_yolo = TrtYOLO(args.model, args.category_num, args.letter_box)
     loop_and_detect(cam, trt_yolo, args.conf_thresh, vis=vis)
-
-    cam.release()
-    cv2.destroyAllWindows()
-
 
 if __name__ == '__main__':
     main()
